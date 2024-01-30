@@ -1,0 +1,8 @@
+image = imread('T7.jpg'); %matrix of image
+image2 = imshow(image) %shows image
+%image3 = imtool(image) %for drawing lines and tools in image window
+image4 = im2bw(image,0.4);%cleanup the image
+complement = imcomplement(image4)
+calculatearea = strel(complement,'disk',25)
+stats2 = regionprops(calculatearea,'Area', 'Centroid')
+%troubleshoot region above
