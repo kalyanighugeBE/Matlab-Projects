@@ -1,0 +1,63 @@
+%1344.02 = 100 cm pixel to length ratio
+vid = VideoReader("IMG_1663_Trim.mp4")
+CurFrame=0;
+ GetFrame = [12:45];
+C1=[];
+while hasFrame(vid)
+
+ CurImage=readFrame(vid);
+ CurFrame = CurFrame+1;
+ if ismember(CurFrame, GetFrame)
+ imwrite(CurImage, sprintf('frame%d.jpg',CurFrame));
+Greenim=CurImage(:,:,1);
+ if CurFrame < 45
+ crop = imcrop(Greenim, [3720 2150 1920 1000]);
+%[XMIN YMIN WIDTH HEIGHT]
+ else
+ crop = imcrop(Greenim, [3720 2150 1320 1000]);
+ end
+
+
+ imshowpair(CurImage,crop,'montage');
+ Greenim(Greenim>155)=NaN;
+ %figure
+ bin = imbinarize(crop,0.5);
+% image_filt = imcomplement(bin);
+% figure
+% imshow(bin);
+
+% bwImageFilled = imfill(Greenim, 'holes');
+% figure;
+% imshow(bwImageFilled);
+
+ StrelParam =10
+ rect_filter = strel('disk',[StrelParam]);
+
+ filteredImage = imopen(bin, rect_filter);
+ %figure;
+ % imshow(filteredImage);
+
+ clearBorderImage = imclearborder(filteredImage);
+% figure;
+% imshow(clearBorderImage);
+
+ stats = regionprops("table", clearBorderImage,'Centroid');
+ Centroid = stats.Centroid;
+%
+ if isempty(Centroid)
+ continue
+ else
+ x = stats.Centroid(:,1);
+ y = stats.Centroid(:,2);
+ C1 = vertcat(C1, [x y]);
+ end
+ end
+end
+Input = C1 ;
+iwant = unique(Input,'rows');
+% figure
+ plot(iwant(:,1),iwant(:,2),'r*');
+% plotmatrix(stats(:,"Centroid"), '-')
+
+
+% title('s1');
