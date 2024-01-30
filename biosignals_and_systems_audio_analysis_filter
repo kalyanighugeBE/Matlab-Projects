@@ -1,0 +1,84 @@
+%Matlab script from Feb 2, Feb 7
+
+%imported stridor2.mp3
+
+%crop the data into a smaller array of just one stridor 
+%breath cycle, then plot and play audio
+data_crop = data(65000:125000,1); 
+figure, plot(data_crop)
+sound(data_crop,fs)
+
+%determine length of array
+L = length(data_crop);
+
+%create our window function
+%first initialize array at the same length as 'data_crop'
+window = zeros(L,1);
+%then create a 400 point window, starting at index 1 
+window(1:400) = 1;
+%plot to make sure it is correct
+figure, plot(window)
+
+%Now we performed the convolution. This can be implemented
+%in a number of ways. Below is one example which
+%uses a 'for' loop structure over a number of iterations
+%equal to the size of the output convolution array:
+%
+%1.time invert (flip) one array
+%2.multiply with the second array
+%3.sum across the integration dimension, k
+%4.delay the first (time inverted, flipped array)
+
+%time invert the data array
+flip_dc = flip(data_crop);
+
+%initialize the output convolution array
+conv_result = zeros(L,1);
+
+%This commented section below includes the lines we used to confirm
+%the multiplication and summation were being performed in the
+%correct array dimension.
+%======================
+%temp = flip_dc.*window;
+%figure, plot(temp)
+%temp2 = sum(temp);
+%temp2 = sum(temp,2);
+%figure, plot(flip_dc)
+%close all
+%======================
+
+%Below is the convolution loop
+
+for jj = 1:L
+
+    %calculate result of convolution for one point in n
+    conv_result(end-jj+1)=sum(flip_dc.*window);
+    
+    %delay the time-inverted data array one index value, and
+    %replace the final value with a zero
+    flip_dc = [flip_dc(2:end);0];
+    
+    %output the percentage completion to command prompt
+    jj./L
+end
+
+%Plot the convolution result and the original data
+figure, plot(conv_result)
+figure, plot(data_crop)
+
+%We noted in this instance, the convolution scaled the data
+%In order to compare the data, and play using the 'sound()'
+%function, we decided to normalize both the output of the
+%convolution and the original cropped data to their max
+%amplitude, ensuring both array's amplitudes were between
+%zero and one.
+
+%normalize both arrays
+norm_dc = data_crop./max(data_crop);
+norm_cr = conv_result./max(conv_result);
+
+%plot and listen to both arrays
+close all
+figure, plot(norm_dc),hold on, plot(norm_cr,'r')
+sound(data_crop,fs)
+sound(norm_cr,fs)
