@@ -1,0 +1,94 @@
+clear all 
+close all
+clc
+
+vid=VideoReader('Attempt2.mp4') %call video
+
+CurFrame=0;
+
+GetFrame = [70:10:298]; 
+while hasFrame(vid)
+    CurImage = readFrame(vid);
+    CurFrame = CurFrame+1;
+    if ismember(CurFrame, GetFrame)
+        imwrite (CurImage, sprintf('frame%d.jpg', CurFrame));
+
+        hold on
+        imshow(CurImage);
+    end
+    hold off
+end
+
+I=imread('frame70.jpg');
+
+%%
+Frame = imread('frame220.jpg'); %reads image into matlab, chose frame of interest
+
+%next, we identify which filter best helps isolate the hex bug
+gray = rgb2gray(Frame);
+rmat = Frame(:,:,1);
+gmat = Frame(:,:,2);
+bmat = Frame(:,:,3);
+
+subplot(2,2,1);
+imshow(Frame);
+title('Frame');
+subplot(2,2,2);
+imshow(rmat);
+title('rmat');
+subplot(2,2,3);
+imshow(bmat);
+title('bmat');
+subplot(2,2,4);
+imshow(gmat);
+title('gmat');
+
+%%
+%use bw and imcomplement to isolate hexbug
+bw = im2bw(bmat,0.5); %value may need to change depending on image
+
+flipbw = imcomplement(bw);  
+
+imshowpair(flipbw,I,'montage')
+imshow(flipbw)
+
+bw_complete = imclearborder(flipbw); %helps clear irrelevant objects
+imshow(bw_complete)
+
+
+%% 
+%fills holes and makes image clean 
+I_fill = imfill(bw_complete,'hole');  
+imshow(I_fill)
+
+filter_rect = strel('rectangle', [4 4]); %value may need to change depending on image 
+I_filtered = imopen(I_fill, filter_rect); 
+imshowpair(I_filtered,I_fill,'montage')  
+imshow(I_filtered)
+
+AreaCut = bwareaopen(I_filtered,500);  
+stats = regionprops(AreaCut,'centroid'); % gets the centroid data  
+imshow(AreaCut)
+
+%%
+%saves centroid data in x,y coordinates 
+hold on
+for x = 1: numel(stats)  
+plot(stats(x).Centroid(1),stats(x).Centroid(2),'o','MarkerFaceColor','r') 
+end
+hold off
+
+
+for x = 1
+centroid1 = [stats(x).Centroid(1),stats(x).Centroid(2)] %puts centroid in z y plane
+    Pos1 = [centroid1/41] %divides by ratio to get into inches
+ 
+end
+
+
+for x = 2
+centroid2 = [stats(x).Centroid(1),stats(x).Centroid(2)] %puts centroid in z y plane
+    Pos2 = [centroid2/41] %divides by ratio to get into inches
+ 
+end
+
