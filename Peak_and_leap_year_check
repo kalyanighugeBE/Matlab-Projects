@@ -1,0 +1,17 @@
+peaks (25)
+peaks(10)
+peaks(100)
+%Gaussian Distribution, greater value, finer mesh
+year=2024
+div = 4
+div1 = 100
+div2 = 400
+rem4 = rem(year,div)
+if rem4>0
+   rem100 = rem(year,div1)
+else disp('leap year!')
+    if rem100<1
+        rem400 = rem(year,div2)
+    else disp('leap year!')
+    end
+end
