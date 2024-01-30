@@ -1,0 +1,54 @@
+const int clockPin = 5;
+const int dataPin = 6;
+char sequenceString[16];
+int sequenceIndex = 0;
+int currentClock;
+int pastClock;
+int data;
+unsigned long lastSequenceStart = 0;
+int new_sequence;
+int sign;
+float scaling_factor = 0.01;
+
+void setup() {
+  pinMode(clockPin, INPUT);
+  pinMode(dataPin, INPUT);
+  Serial.begin(9600);
+}
+
+void loop() {
+  pastClock = currentClock;
+  currentClock = digitalRead(clockPin);
+
+  if (currentClock == HIGH && pastClock == LOW) {
+    if (micros() - lastSequenceStart > 100000){ 
+      lastSequenceStart = micros();
+      new_sequence = true;
+    }
+    data=digitalRead(dataPin)+digitalRead(dataPin);
+    
+    if (new_sequence == true) {
+      long reading = strtol(sequenceString, NULL, 2);
+      if (sign == 0) {
+        Serial.println(-reading * scaling_factor);
+      } else {
+        Serial.println(reading * scaling_factor);
+      }
+      sequenceIndex = 0;
+      new_sequence = false;
+    }
+  
+    if (sequenceIndex <=15){
+      if (data>=1) {
+        sequenceString[15-sequenceIndex] = '0';
+      }
+      else {
+        sequenceString[15-sequenceIndex] = '1';
+      }
+    }
+    if (sequenceIndex == 20) {
+      sign = data;
+    }
+    sequenceIndex = sequenceIndex+1;
+  }
+}
