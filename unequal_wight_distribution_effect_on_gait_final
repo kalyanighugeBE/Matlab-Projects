@@ -1,0 +1,56 @@
+clc;
+clear all;
+close all;
+tic;
+vid=VideoReader('Julia0%.mp4');
+  numFrames = vid.NumberOfFrames;
+  n=numFrames;
+for i = 12:1:45
+  frames = read(vid,i);
+   imwrite(frames,['C:\users\tuk02297\Desktop\' int2str(i), '.jpg']);
+   %write the arrows seen in the tab right above the file tab in the quotes
+end 
+multi = dir('C:\users\tuk02297\Desktop\*.jpg*');
+%write the arrows seen in the tab right above the file tab in the quotes
+for i = 1:1:length(multi)
+
+end
+
+%%
+
+Frame = imrotate(imread('220.jpg'),90); %reads image into matlab, chose frame of interest
+I=imrotate(imread('220.jpg'),90);
+
+gray = rgb2gray(Frame);
+rmat = Frame(:,:,1);
+gmat = Frame(:,:,2);
+
+subplot(2,2,1);
+imshow(Frame);
+title('Frame');
+
+subplot(2,2,2);
+imshow(rmat);
+title('rmat');
+
+subplot(2,2,4);
+imshow(gmat);
+title('gmat');
+
+bw = im2bw(rmat,0.2); %value may need to change depending on image
+
+flipbw = (bw);  %imcomplement not used because the centroids were better tracked without the function.
+
+imshowpair(flipbw,I,'montage')
+imshow(flipbw)
+
+bw_complete = imclearborder(flipbw); %helps clear irrelevant objects
+imshow(bw_complete)
+
+I_fill = imfill(bw_complete,'hole');  
+imshow(I_fill)
+
+filter_rect = strel('rectangle', [3 3]); %value may need to change depending on image 
+I_filtered = imopen(I_fill, filter_rect); 
+imshowpair(I_filtered,I_fill,'montage')  
+imshow(I_filtered)
