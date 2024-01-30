@@ -1,0 +1,184 @@
+name= input('Enter Your Name (with an apostrophe at end and beginning)');
+disp('Lets analyse your Stress Strain Data')
+disp(name)
+pause(2)
+answer = questdlg('Choose a Shape ', ...
+	'Area Calculation', ...
+	'Cylinder','Cuboid','Cancel','Cancel');
+% Handle response - Don't enter the numbers with apostrophe. This will
+% result in the wrong answer.Enter values close to zero for preload, 0.0001
+% and upper limit, >0.06, 0.10
+switch answer
+    case 'Cylinder'
+        disp('Do not use apostrophe for numbers')
+        pause(2)
+        
+        preload= input(['Enter preload value']);
+        cyldim_r= input(['Enter radius']);
+        h= input(['Enter height']);
+        rh = cyldim_r.*h;
+        rsq = cyldim_r.^2;
+        area = (2*pi*rh)+(2*pi*rsq)
+
+    case 'Cuboid'
+        disp('Do not use apostrophe for numbers')
+        pause(2)
+        
+        preload= input(['Enter preload value']);
+        l= input(['Enter length']);
+        b= input(['Enter breadth']);
+        h= input(['Enter height']);
+        lenb = 2*l.*b;
+        lenh = 2*l.*h;
+        breh = 2*h.*b;
+        area = lenb + lenh + breh
+
+
+
+    case 'Cancel'
+        disp('You have exited the programme.')
+        
+end
+%functions defines at the end because of error in matlab.
+% copy and paste the following command set to obtain stress and strain
+% data.Change the file name and change the numbers at the end of variable
+% to record all.
+
+load exdata1.mat
+stress1 = stressfunc(area,force,preload);
+strain1 = strainfunc(extension,h);
+
+load exdata2.mat
+stress2 = stressfunc(area,force,preload);
+strain2 = strainfunc(extension,h);
+
+load exdata3.mat
+stress3 = stressfunc(area,force,preload);
+strain3 = strainfunc(extension,h);
+
+load exdata4.mat
+stress4 = stressfunc(area,force,preload);
+strain4 = strainfunc(extension,h);
+
+load exdata5.mat
+stress5 = stressfunc(area,force,preload);
+strain5 = strainfunc(extension,h);
+
+load exdata6.mat
+stress6 = stressfunc(area,force,preload);
+strain6 = strainfunc(extension,h);
+
+pause (8)
+%large pause to observe the largest value of strain-stress, to set offset value.
+ uplim= input(['Enter upperlimit value for graph (<1)']); %0.09 to 0.1 recomended.
+disp('upper limit selected as..')
+disp(uplim)
+lowlim= input(['Enter lowerlimit value for graph (0, unless negative numbers ' ...
+    'are shown in strain-stress data)']); 
+disp('lower limit selected as..')
+disp(lowlim)
+pause(2)
+%graph of all strain-stress
+
+plot(strain1,stress1,'g',strain2,stress2,'c',strain3,stress3,'m',strain4,stress4,'k',strain5,stress5,'b',strain6,stress6,'r');
+xlabel('Strain')
+ylabel('Stress')
+title('Stress-Strain Graph');
+legend('exdata1','exdata2','exdata3','exdata4','exdata5','exdata6')
+
+%modulus by division of matrices
+modulus1 = mldivide(stress1,strain1)
+modulus2 = mldivide(stress2,strain2)
+modulus3 = mldivide(stress3,strain3)
+modulus4 = mldivide(stress4,strain4)
+modulus5 = mldivide(stress5,strain5)
+modulus6 = mldivide(stress6,strain6)
+Modulus_mldivfunc_table = table(modulus1,modulus2,modulus3,modulus4,modulus5,modulus6)
+
+
+ss_curve1 = fit(strain1,stress1,'poly1','Lower',[lowlim 0],'Upper',[uplim 0]);
+p1= coeffvalues(ss_curve1);    % store coefficient of fit
+Mod1graph= p1(1);              % modulus
+    
+ss_curve2 = fit(strain2,stress2,'poly1','Lower',[lowlim 0],'Upper',[uplim 0]);
+p2= coeffvalues(ss_curve2);    % store coefficient of fit
+Mod2graph= p2(1);              % modulus 
+    
+ss_curve3 = fit(strain3,stress3,'poly1','Lower',[lowlim 0],'Upper',[uplim 0]);
+p3= coeffvalues(ss_curve3);    % store coefficient of fit
+Mod3graph= p3(1);              % modulus 
+    
+ss_curve4 = fit(strain4,stress4,'poly1','Lower',[lowlim 0],'Upper',[uplim 0]);
+p4= coeffvalues(ss_curve4);    % store coefficient of fit
+Mod4graph= p4(1);              % modulus 
+    
+ss_curve5 = fit(strain5,stress5,'poly1','Lower',[lowlim 0],'Upper',[uplim 0]);
+p5= coeffvalues(ss_curve5);    % store coefficient of fit
+Mod5graph= p5(1);              % modulus 
+    
+ss_curve6= fit(strain6,stress6,'poly1','Lower',[lowlim 0],'Upper',[uplim 0]);
+p6= coeffvalues(ss_curve6);    % store coefficient of fit
+Mod6graph= p6(1);              % modulus 
+    
+%polynomial1 top of each other using hold on command
+figure  
+plot(ss_curve1,':g',strain1,stress1,'g'); 
+hold on;
+plot(ss_curve2,':c',strain2,stress2,'c'); 
+hold on;
+plot(ss_curve3,':m',strain3,stress3,'m'); 
+hold on;
+plot(ss_curve4,':k',strain4,stress4,'k'); 
+hold on;
+plot(ss_curve5,':b',strain5,stress5,'b'); 
+hold on;
+plot(ss_curve6,':r',strain6,stress6,'r'); 
+hold on;
+    
+% graph labelling
+title('Polynimial curve for Stress-Strain Graph')
+xlabel('Strain')
+ylabel('Stress ')
+legend('exdata1','fitted curve','exdata2','fitted curve','exdata3','fitted curve', ...
+'exdata4','fitted curve','exdata5','fitted curve','exdata6','fitted curve')
+
+    
+%Plot modulus using hold on command
+figure
+plot(p1,'g'); 
+hold on;
+plot(p2,'c'); 
+hold on;
+plot(p3,'m'); 
+hold on;
+plot(p4,'k'); 
+hold on;
+plot(p5,'b'); 
+hold on;
+plot(p6,'r'); 
+hold on;
+    
+% graph labelling
+title('Modulus for all data')
+legend('exdata1','exdata2','exdata3','exdata4','exdata5','exdata6')
+
+Graphmodulus = table(Mod1graph,Mod2graph,Mod3graph,Mod4graph,Mod5graph,Mod6graph)
+
+u = input('Enter modulus you want to test for variance. (with an apostrophe at end and beginning)');
+pause(2)
+v = input('Enter modulus you want to test for variance with. (with an apostrophe at end and beginning)');
+
+variance = ttest2(u,v)
+
+
+
+
+
+%stress-strain functions created
+function stress = stressfunc(area,force,preload)
+         stress = ((force-preload)*-1/area)
+end
+
+function strain = strainfunc(extension,height)
+         strain = (extension*-1/height)
+end
