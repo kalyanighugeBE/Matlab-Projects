@@ -1,0 +1,84 @@
+clc;
+clear all;
+data = readtable("Biomechanics Lab Final Data - H15%.csv");
+
+
+time = data{:,"Time"};
+angle = data{:,"Angle"};
+hipx = data{:,"hipx"};
+hipy = data{:,"hipy"};
+kneeux = data{:,"kneex"};
+kneeuy = data{:,"kneey"};
+
+figure, plot(time,angle)
+xlabel('Time (s)')
+ylabel ('Angle (degrees)')
+
+quadx = (kneeux+hipx)/2;
+quady = (kneeuy+hipy)/2;
+
+%velocity = delta distance/delta time
+time_diff1 = diff(time); 
+tdiff = zeros(15,1); %one less than the number of frames
+tdiff(1:33) = 0.014327;%change this value to mtach time between frames
+t = 0.014327;
+%Velocity Calculations:
+distx = diff(quadx);
+disty = diff(quady);
+
+velocityx = distx./time_diff1;
+velocityy = disty./time_diff1;
+
+figure, plot(time(2:end),velocityx)
+xlabel('Time (s)')
+ylabel ('Velocity x-direction (m/s)')
+hold on
+plot(time(2:end),velocityy)
+xlabel('Time (s)')
+ylabel ('Velocity x&y-direction (m/s)')
+legend('Velocity x-direction','Velocity y-direction')
+hold off
+
+Average_velocityx = mean(velocityx);
+Average_velocityy = mean(velocityy);
+Averagevelocity_mag = sqrt((Average_velocityx^2)+(Average_velocityy^2))
+%Acceleration Calculations:
+accelerationx = (diff(velocityx))./t;
+accelerationy = (diff(velocityy))./t;
+
+figure, plot(time(3:end),accelerationx)
+xlabel('Time (s)')
+ylabel ('Acceleration (m/s^2)')
+hold on
+ plot(time(3:end),accelerationy)
+xlabel('Time (s)')
+ylabel ('Acceleration (m/s^2)')
+legend('Acceleration x-direction','Acceleration y-direction')
+hold off
+
+Average_acclx = mean(accelerationx);
+Average_accly = mean(accelerationy);
+Averageaccl_mag = sqrt((Average_acclx^2)+(Average_accly^2))
+time2 = time(2:end);
+time3 = time(3:end);
+
+%Angular Acceleration
+angvelocity = (diff(angle))./t;
+angaccelertion = (diff(angvelocity))./t;
+Avangvelocity = mean(angvelocity)
+Avangacceleration = mean(angaccelertion)
+
+figure, plot(time3, angaccelertion)
+xlabel('Time (s)')
+ylabel ('Angular Acceleration (degree/s^2)')
+
+linacceleration = sqrt((accelerationx.^2) + (accelerationy.^2));
+figure, plot(time(3:end),linacceleration)
+xlabel('Time (s)')
+ylabel ('Acceleration (m/s^2)')
+hold on
+plot(time3, angaccelertion)
+xlabel('Time (s)')
+ylabel ('Angular Acceleration (degree/s^2)')
+legend('Linear Acceleration m/s^2','Angular Acceleration degree/s^2')
+hold off
