@@ -1,0 +1,196 @@
+PLEASE REMEMBER TO IMPORT ALL THE DATA AT ONCE. THEN IMPORT THE DATA AS SUGGESTED BEFORE EACH QUESTION. 
+Question 1:
+Import "InfantCry.mat"
+time_C1 = [(1/fs):(1/fs):length(C1)*(1/fs)];
+time_C3 = [(1/fs):(1/fs):length(C3)*(1/fs)];
+time_S2 = [(1/fs):(1/fs):length(S2)*(1/fs)];
+time_S4 = [(1/fs_s4):(1/fs_s4):length(S4)*(1/fs_s4)];
+
+faxis_C1 = linspace(-fs/2,fs/2,length(C1));
+faxis_C3 = linspace(-fs/2,fs/2,length(C3));
+faxis_S2 = linspace(-fs/2,fs/2,length(S2));
+faxis_S4 = linspace(-fs_s4/2,fs_s4/2,length(S4));
+
+F_C1 = fft(C1);
+F_C3 = fft(C3);
+F_S2 = fft(S2);
+F_S4 = fft(S4);
+
+figure,
+subplot(311),
+plot(time_C1,C1),xlabel('Time (sec)'),ylabel('Mag')
+subplot(312),
+plot(faxis_C1, 20*log10(abs(fftshift(F_C1)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+subplot(313),
+plot(faxis_C1, unwrap(angle(fftshift(F_C1)))),xlabel('Frequency (Hz)'), ylabel('Unwrapped Phase (rad)')
+figure,
+subplot(311),
+plot(time_C3,C3),xlabel('Time (sec)'),ylabel('Mag')
+subplot(312),
+plot(faxis_C3, 20*log10(abs(fftshift(F_C3)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+subplot(313),
+plot(faxis_C3, unwrap(angle(fftshift(F_C3)))),xlabel('Frequency (Hz)'), ylabel('Unwrapped Phase (rad)')
+figure,
+subplot(311),
+plot(time_S2,S2),xlabel('Time (sec)'),ylabel('Mag')
+subplot(312),
+plot(faxis_S2, 20*log10(abs(fftshift(F_S2)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+subplot(313),
+plot(faxis_S2, unwrap(angle(fftshift(F_S2)))),xlabel('Frequency (Hz)'), ylabel('Unwrapped Phase (rad)')
+
+figure,
+subplot(311),
+plot(time_S4,S4),xlabel('Time (sec)'),ylabel('Mag')
+subplot(312),
+plot(faxis_S4, 20*log10(abs(fftshift(F_S4)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+subplot(313),
+plot(faxis_S4, unwrap(angle(fftshift(F_S4)))),xlabel('Frequency (Hz)'), ylabel('Unwrapped Phase (rad)')
+Question 2:
+Import "ECG_assign23.mat"
+time_ECG = [(1/fs):(1/fs):length(noisyECG)*(1/fs)];
+faxis_ECG = linspace(0,fs,length(noisyECG));
+F_ECG = fft(noisyECG);
+figure,
+subplot(211),
+plot(time_ECG,noisyECG),xlabel('Time (sec)'),ylabel('Mag')
+subplot(212),
+plot(faxis_ECG, 20*log10(abs(fftshift(F_ECG)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+
+[b_num,a_denom] = butter(10,[0.1 12]/150); % cut off between 0.1 Hz and 12 Hz
+[hf,wf] = freqz(b_num,a_denom,length(noisyECG)/2);
+figure, plot(wf,20*log10(abs(hf)))
+f_axis = linspace(0,fs/2,length(noisyECG)./2);
+figure,
+subplot(211),
+yyaxis left
+plot(f_axis, 20*log10(abs(F_ECG(1:(length(F_ECG)/2))))),ylabel('Mag (dB)'),
+yyaxis right
+plot(f_axis,20*log10(abs(hf)),'r')
+subplot(212),
+yyaxis left
+plot(f_axis, unwrap(angle((F_ECG(1:(length(F_ECG)/2)))))),xlabel('Frequency (Hz)'),ylabel('Unwrapped Phase (rad)'),
+yyaxis right
+plot(f_axis,unwrap(angle(hf)),'r')
+
+new_ECG = filter(b_num,a_denom,noisyECG);
+F_new_ECG = fft(new_ECG);
+pfaxis = linspace(0,fs/2,length(noisyECG));
+
+figure,
+subplot(311),
+plot(time_ECG,noisyECG)
+hold on,
+plot(time_ECG,new_ECG), xlabel('Time (sec)'),ylabel('Voltage')
+subplot(312),
+plot(pfaxis, 20*log10(abs(fftshift(F_ECG)))),ylabel('Mag (dB)'),
+hold on,
+plot(pfaxis, 20*log10(abs(fftshift(F_new_ECG))),'g'),ylabel('Mag (dB)'),
+subplot(313),
+plot(pfaxis, unwrap(angle(fftshift(F_ECG)))),xlabel('Frequency (Hz)'),ylabel('Unwrapped Phase (rad)'),
+hold on,
+plot(pfaxis, unwrap(angle(fftshift(F_new_ECG))),'g')
+Question 6:
+Import "BIOE3301_A3.m"
+https://www.mathworks.com/help/signal/ref/butter.html?overload=butter+false#bucse3u_sep_shared-n (band pass)
+figure,
+subplot(311),
+plot(t1,irALPHA), xlabel('Time'),ylabel(' Alpha Voltage')
+subplot(312),
+plot(t1,irBETA), xlabel('Time'),ylabel('Beta Voltage')
+subplot(313),
+plot(t1,irGAMMA), xlabel('Time'),ylabel('Gamma Voltage')
+
+fs_ir = 1/(3.6700/11001); % 1/(last time point/number of data points)
+frequency_ir = linspace(0,fs_ir,11001);
+alpha = fft(irALPHA);
+beta = fft(irBETA);
+gamma = fft(irGAMMA);
+
+figure,
+subplot(311),
+plot(frequency_ir, 20*log10(abs(fftshift(alpha)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+subplot(312),
+plot(frequency_ir, 20*log10(abs(fftshift(beta)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+subplot(313),
+plot(frequency_ir, 20*log10(abs(fftshift(gamma)))),xlabel('Frequency (Hz)'), ylabel('Mag (dB)'),
+
+figure,
+subplot(311),
+plot(frequency_ir, unwrap(angle(fftshift(alpha)))),xlabel('Frequency (Hz)'), ylabel('Unwrapped Phase (rad)')
+subplot(312),
+plot(frequency_ir, unwrap(angle(fftshift(beta)))),xlabel('Frequency (Hz)'), ylabel('Unwrapped Phase (rad)')
+subplot(313),
+plot(frequency_ir, unwrap(angle(fftshift(gamma)))),xlabel('Frequency (Hz)'), ylabel('Unwrapped Phase (rad)')
+Question 7:
+Demodulation of 3-lead ECG signals
+alpha_t = fft(alpha);
+beta_t = fft(beta);
+gamma_t = fft(gamma);
+Fz_abg = linspace(-2*fs_ir,2*fs_ir,length(alpha));
+
+figure,
+subplot(311),
+plot(Fz_abg,alpha_t),xlabel('Time (sec)'), ylabel('Magnitude of fft (dB)')
+subplot(312),
+plot(Fz_abg,beta_t),xlabel('Time (sec)'), ylabel('Magnitude of fft (dB)')
+subplot(313),
+plot(Fz_abg,gamma_t),xlabel('Time (sec)'), ylabel('Magnitude of fft (dB)')
+
+t_lead = linspace(1/(4*fs_ir),1/(4*fs_ir).*length(alpha),length(alpha));
+new_mod_sig = cos(6000*2*pi().*t_lead);
+alpha_demod = alpha_t.*new_mod_sig;
+beta_demod = beta_t.*new_mod_sig;
+gamma_demod = gamma_t.*new_mod_sig;% demodulated signals A.B.G
+%11. Confirm demodulation by plotting fourier transform
+a_demod = ifft(alpha_demod);
+b_demod = (beta_demod);
+g_demod = (gamma_demod);
+
+figure,
+subplot(311),
+plot(t1,20*log10(abs(fftshift(a_demod)))),xlabel('Time (sec)'), ylabel('Magnitude of fft (dB)')
+subplot(312),
+plot(t1,20*log10(abs(fftshift(b_demod)))),xlabel('Time (sec)'), ylabel('Magnitude of fft (dB)')
+subplot(313),
+plot(t1,20*log10(abs(fftshift(g_demod)))),xlabel('Time (sec)'), ylabel('Magnitude of fft (dB)')
+%Low pass filt
+%[b_num1,a_denom1] = butter(2,2*150/fs_ir);
+%[hf1,wf1] = freqz(b_num1,a_denom1,11001/2);
+%figure, plot(wf1,20*log10(abs(hf1)))
+
+Question 8:
+Infectious disease modelling
+timed = [1:2:100];
+e = exp(-0.21*timed);
+c1 = 100,000.*cos(0.2058.*timed);
+c2 = 382000.*sin(0.2058.*timed);
+V_t = e.*(c1+c2);
+s = linspace(0,2,50);
+denomntr = ((s+0.21).^2)+0.04235364;
+numer1 = -900000./(s-0.4);
+numer2 = 1000000./(s-0.02);
+v_tfreq = (numer1./denomntr)+(numer2./denomntr);
+max_v = max(v_tfreq)
+perc = max_v*0.1
+v_tfreqp = (v_tfreq/max_v).*100
+figure,
+subplot(211)
+plot(timed,V_t), xlabel('Time (Day)'), ylabel('% of People')
+subplot(212)
+plot(timed,v_tfreq), xlabel('Frequency'), ylabel('% of People')
+
+max_vt = max(V_t);
+V_tp = (V_t/max_vt).*100
+plot(timed,V_tp), xlabel('Time (Month/Day/Week)'), ylabel('Number of People')
+syms t
+%eqn = exp(-0.21*t)*((100,000*cos(0.2058*t))+(1301926*sin(0.2058*t))) == 0.1
+%ans = solve(eqn)
+8. a+b
+b = [0,100000,382000];
+a = [1,0.42,0.008];
+[gamma,alpha,k] = residue(b,a)
+syms s
+f = (-900000/(s-0.4))+(1000000/(s-0.02));
+F = ilaplace(f)
+%F1 = 1000000*exp(t/50) - 900000*exp((2*t)/5) == 4.8018e+07;
+%ans = solve(F1)
