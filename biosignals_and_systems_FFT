@@ -1,0 +1,38 @@
+
+%crop the data to narrow range
+Y = data(400001:400500,1);
+
+%create a time axis based on the sampling frequency
+tY = linspace(1/fs,500*(1/fs),500);
+
+%plot the data
+figure, plot(tY,Y);
+
+%perform the discrete time fourier transform
+F = fft(Y);
+
+%create a frequency axis from -pi to +pi in normalized angular frequency, -fs/2 tp +fs/2 in absolute frequency
+freqA = linspace(-fs/2,fs/2,500);
+
+%calculate the magnitude of the complex fft.
+magF = abs(F);
+
+
+%here, we plot what's directly output from the fft function, which is the fft from 0 to 2pi in normalized angular frequency, or 0 to fs in absolute frequency
+
+raw_freqA = linspace(0,fs,500)
+figure, plot(raw_freqA,magF)
+xlabel('Frequency (Hz)')
+ylabel('Magnitude (a.u.)')
+
+
+%in order to shift the output to match the -pi to pi  normalized range, you can use fftshift() function
+shift_F = fftshift(F);
+mag_shift_F = abs(shift_F);
+figure, plot(freqA,mag_shift_F)
+figure(1),xlabel('Time(s)'),figure(3),xlabel('Frequency(Hz)')
+
+
+%calculate the phase of the fft
+angle_shift_F = angle(shift_F);
+figure, plot(freqA,angle_shift_F);
