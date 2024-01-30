@@ -1,0 +1,93 @@
+%Get frames 12 to 45:
+%2 second - 80 frames
+%x second - 34 frames
+%x = 0.85 seconds
+clc;
+clear all;
+close all;
+tic;
+vid=VideoReader('IMG_1663_Trim.mp4');
+  numFrames = vid.NumberOfFrames;
+  n=numFrames;
+for i = 12:1:45
+  frames = read(vid,i);
+   imwrite(frames,['C:\users\tuk02297\Desktop\' int2str(i), '.jpg']);
+   %write the arrows seen in the tab right above the file tab in the quotes
+end 
+multi = dir('C:\users\tuk02297\Desktop\*.jpg*');
+%write the arrows seen in the tab right above the file tab in the quotes
+for i = 1:1:length(multi)
+
+end
+%Co-ordinates for red markers:
+%We could not correctly identify the markers on the ankle. The frames isolated from the code above were manually edited with addition of little dots to highlight our tape markers.
+
+Frame = imread('frame12 (1).jpg'); %reads image into matlab, chose frame of interest
+I=imread('frame12 (1).jpg');
+
+gray = rgb2gray(Frame);
+rmat = Frame(:,:,1);
+gmat = Frame(:,:,2);
+
+subplot(2,2,1);
+imshow(Frame);
+title('Frame');
+
+subplot(2,2,2);
+imshow(rmat);
+title('rmat');
+
+subplot(2,2,4);
+imshow(gmat);
+title('gmat');
+
+bw = im2bw(rmat,0.9); %value may need to change depending on image
+
+flipbw = (bw);  %imcomplement not used because the centroids were better tracked without the function.
+
+imshowpair(flipbw,I,'montage')
+imshow(flipbw)
+
+bw_complete = imclearborder(flipbw); %helps clear irrelevant objects
+imshow(bw_complete)
+
+I_fill = imfill(bw_complete,'hole');  
+imshow(I_fill)
+
+filter_rect = strel('rectangle', [3 3]); %value may need to change depending on image 
+I_filtered = imopen(I_fill, filter_rect); 
+imshowpair(I_filtered,I_fill,'montage')  
+imshow(I_filtered)
+
+AreaCut = bwareaopen(I_filtered,500);  
+stats = regionprops(AreaCut,'centroid'); % gets the centroid data  
+imshow(AreaCut)
+
+hold on
+for x = 1: numel(stats)  
+plot(stats(x).Centroid(1),stats(x).Centroid(2),'o','MarkerFaceColor','r') 
+end
+hold off
+
+% 853.16 pixels = 1m 
+% x pixels = ?m
+for x = 1
+centroid1 = [stats(x).Centroid(1),stats(x).Centroid(2)] %puts centroid in z y plane
+    Pos1 = [centroid1/853.16] %divides by ratio to get prodcut in metres
+ 
+end
+
+
+for x = 2
+centroid2 = [stats(x).Centroid(1),stats(x).Centroid(2)] %puts centroid in z y plane
+    Pos2 = [centroid2/853.16] %divides by ratio to get into metres
+ 
+end
+
+for x = 3
+centroid3 = [stats(x).Centroid(1),stats(x).Centroid(2)] %puts centroid in z y plane
+   Pos3 = [centroid3/853.16] %divides by ratio to get into metres
+ 
+end
+
+
