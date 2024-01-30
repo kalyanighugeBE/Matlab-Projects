@@ -1,0 +1,40 @@
+%plot(NR1(:,1),NR1(:,2))
+%plot(ZFP(:,1),ZFP(:,2))
+%load circadian rhythm data
+function [a,b,c] = SineFit(DATA,DTREND);
+
+%plotrhythm data
+figure, plot(DATA(:,1),DATA(:,2))
+
+%dtrend tries to fit a straight line of all data points
+
+if DTREND == 1
+    DATA = [DATA(:,1),detrend(DATA(:,2))];
+else
+end
+
+
+a=[];%amplitude
+b=[];%frequency
+c=[];%phase
+
+figure,
+%perform fitting
+for j = 1:8 %number of times the loop runs.
+    f = fit(DATA(:,1),DATA(:,2),['sin',num2str(j)]);
+    cv = coeffvalues(f);
+    for k =1:j
+        a(k) = cv((k*3)-2);
+        b(k) = cv((k*3)-1);
+        c(k) = cv((k*3)-0);
+    end
+    %c=unwrap(c);
+    subplot(311),plot(f,DATA(:,1),DATA(:,2)),xlabel('time(hrs)'),ylabel('ZR1 Gene Expression'),title([num2str(j),' sine terms']);
+    subplot(312), plot(b,a,'ok','MarkerSize',12,'MarkerFaceColor','k'),xlabel('frequency (Hrs^-^1)'),ylabel('ZR1 Fit Amp'),title([num2str(j),' sine terms'])
+    subplot(313), plot(c,a,'ok','MarkerSize',12,'MarkerFaceColor','k'),xlabel('phase (rad)'),ylabel('ZR1 Fit Phase Amp'),title([num2str(j),' sine terms'])
+    pause,
+    
+end
+
+end
+
