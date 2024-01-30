@@ -1,0 +1,102 @@
+**Import 'Assignment1_2023.mat' data before running script
+Question 1: Plot the inhalation and blood response vs time on the same axis. Label all axes and plots.
+\\\figure
+plot(TIME,PLAX_INHAL,'g')
+hold on
+plot(TIME,PLAX_INHAL_BLOOD,'r')
+title('Inhalation and Blood Response vs Time')
+xlabel('Time (min)')
+ylabel('Conc. Inahled/Conc. Blood -of Drug (mg/dL)')
+legend('Drug Inhaled','Blood Response')
+hold off
+Question 1a and 2 : Answered in the Doc
+Question 3: Plot the blood concentration vs. time if the inhalation was delayed by 60 min.
+%x = zeros(60,1)
+%PLAX_INHAL1 = [x; reshape(PLAX_INHAL(1:301), [], 1)]
+%plot(TIME,PLAX_INHAL1,'g')
+Note: I didnt know how I could modify the time to go up to 361, so I used the following method instead. This way the time was delayed too.
+TIME1 = TIME+60;
+figure
+%plot(TIME1,PLAX_INHAL,'g')
+%hold on
+plot(TIME1,PLAX_INHAL_BLOOD,'r')
+title('Blood Response vs Time with 60 min Delay')
+xlabel('Time (min)')
+ylabel('Conc. Blood of Drug (mg/dL)')
+legend('Blood Response')
+Question 4: Plot the blood concentration vs. time if the inhalation was 5 mg/dL.
+figure
+PLAX_INHAL_BLOOD1 = 5.*PLAX_INHAL_BLOOD;
+plot(TIME,PLAX_INHAL_BLOOD1,'r')
+title('Blood Response to 5x Inhalation vs Time')
+xlabel('Time (min)')
+ylabel('Conc. Blood of Drug (mg/dL)')
+legend('Blood Response')
+Question 5: You need to report on blood concentrations if the inhalant was administered via a continuous mask respirator, starting at t=20 min,  that delivered .1 mg/dL over 10 min, or a total Plaxamaxin dose of 1 mg/dL.
+b. Generate the mask respirator plaxamaxin administration function (in mg/dL), ‘resp_plax(t)’, and plot this function.
+%TIME2 = TIME+20;
+resp_plax_t = zeros(301,1);
+resp_plax_t(20:29)=0.1; %(10 times when dosage was administrated, if we do 30, it will be 11)
+figure
+plot(TIME,resp_plax_t)
+title('Drug Inhalation Administration vs Time')
+xlabel('Time (min)')
+ylabel('Drug Administered (mg/dL)')
+legend('Administration over 10 mins')
+c. Plot the blood concentration of plaxamaxin, ‘resp_plax_blood(t)’, that arises in response to this administration function.
+resp_plax_blood_t1 = conv(resp_plax_t,PLAX_INHAL_BLOOD);
+resp_plax_blood_t = resp_plax_blood_t1((1:301),1);
+figure
+plot(TIME,resp_plax_t)
+hold on
+plot(TIME,resp_plax_blood_t)
+title('Administration and Blood Conc. of drug vs Time')
+xlabel('Time (min)')
+ylabel('Administered and Drug Conc. in Blood (mg/dL)')
+legend('Administration over 10 mins','Drug Conc. in Blood')
+hold off
+d. Generate and Plot the blood concentration of plaxamaxin, ‘resp_plax_blood_2(t)’ if the inhalant was administered via a continuous mask respirator, starting at t=20 min,  that delivered .1 mg/dL over 60 min, or a total Plaxamaxin dose of 6 mg/dL. Describe the difference.
+resp_plax_2t = zeros(301,1);
+resp_plax_2t(20:79)=0.1; %(10 times when dosage was administrated, if we do 30, it will be 11)
+figure
+plot(TIME,resp_plax_2t)
+title('Drug Inhalation Administration vs Time')
+xlabel('Time (min)')
+ylabel('Drug Administered (mg/dL)')
+legend('Administration over 60 mins')
+resp_plax_blood_2t1 = conv(resp_plax_2t,PLAX_INHAL_BLOOD);
+resp_plax_blood_2t = resp_plax_blood_2t1((1:301),1);
+figure
+plot(TIME,resp_plax_2t)
+hold on
+plot(TIME,resp_plax_blood_2t)
+title('Administration and Blood Conc. of drug vs Time')
+xlabel('Time (min)')
+ylabel('Administered and Drug Conc. in Blood (mg/dL)')
+legend('Administration over 60 mins','Drug Conc. in Blood')
+hold off
+6. Plaxamaxin is primarily cleared from the blood by the kidneys and excreted in the urine. You wish to determine kidney’s clearance of Plaxamaxin by administering a bolus intravenous (IV) injection of plaxamaxin of 1 mg/dL into the blood at time=0. The bolus IV injection function is given as INJ_PLAX_BLOOD. The kidney’s clearance is measured as the concentration of Plaxamaxin in the urine (mg/dL) from a urinary catheter and given as PLAX_URINE
+b. Plot Plaxamxin concentration in the urine if it was administered via a continuous mask respirator that delivered .1 mg/dL over 10 min, starting at t=20 min. 
+urine_plax_blood_t1 = conv(resp_plax_t,PLAX_URINE);
+urine_plax_blood_t = resp_plax_blood_t1((1:301),1);
+figure
+plot(TIME,resp_plax_t)
+hold on
+plot(TIME,urine_plax_blood_t)
+title('Excretion of drug vs Time')
+xlabel('Time (min)')
+ylabel('Excretion of Drug through Urine (mg/dL)')
+legend('Administration over 10 mins','Drug Conc. in Urine')
+hold off
+c. Plot Plaxamxin concentration in the urine if it was administered via a continuous mask respirator that delivered .1 mg/dL over 60 min, starting at t=20 min. 
+urine_plax_blood_2t1 = conv(resp_plax_2t,PLAX_URINE);
+urine_plax_blood_2t = resp_plax_blood_2t1((1:301),1);
+figure
+plot(TIME,resp_plax_2t)
+hold on
+plot(TIME,urine_plax_blood_2t)
+title('Excretion of drug vs Time')
+xlabel('Time (min)')
+ylabel('Excretion of Drug through Urine (mg/dL)')
+legend('Administration over 60 mins','Drug Conc. in Urine')
+hold off
